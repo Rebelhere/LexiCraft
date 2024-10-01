@@ -31,7 +31,7 @@
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/lexicraft.git
+    git clone https://github.com/Rebelhere/lexicraft.git
     ```
 2. Compile and run the program:
     ```bash
