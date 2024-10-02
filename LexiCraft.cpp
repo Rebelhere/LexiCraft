@@ -39,12 +39,19 @@ public:
 
             newNode->next = cursor;
             newNode->prev = cursor->prev;
-            newNode->prev->next = newNode;
+            if (newNode->prev != nullptr)
+            {
+                newNode->prev->next = newNode;
+            }
+            else
+            {
+                head = newNode;
+            }
             cursor->prev = newNode;
             size++;
             cursorposition++;
         }
-        
+
     }
 
     void moveLeft() {
@@ -53,7 +60,7 @@ public:
             cursor = cursor->prev;
             cursor->data = '|';
             cursorposition--;
-            
+
         }
     }
 
@@ -67,41 +74,41 @@ public:
     }
 
     void moveUp() {
-        int count=0;
+        int count = 0;
         Node* temp = cursor->prev;
-        while (temp!=nullptr && temp->data!='\n') {
+        while (temp != nullptr && temp->data != '\n') {
             temp = temp->prev;
             count++;
         }
 
         if (temp == nullptr) {
-            return; 
+            return;
         }
         temp = temp->prev;
 
         if (temp == nullptr) {
-            return; 
+            return;
         }
 
         while (temp->prev != nullptr && temp->data != '\n') {
             temp = temp->prev;
         }
 
-        if (temp->data=='\n')
+        if (temp->data == '\n')
         {
             temp = temp->next;
         }
 
         for (int i = 0; i < count; i++)
         {
-            if (temp->data=='\n')
+            if (temp->data == '\n')
             {
                 break;
             }
             temp = temp->next;
         }
 
-        while (cursor!=temp)
+        while (cursor != temp)
         {
             moveLeft();
         }
@@ -114,29 +121,29 @@ public:
             temp = temp->prev;
             count++;
         }
-        if (cursor->next==nullptr)
+        if (cursor->next == nullptr)
         {
             return;
         }
         temp = cursor;
-        while (temp->next != nullptr && temp->data!='\n')
+        while (temp->next != nullptr && temp->data != '\n')
         {
             temp = temp->next;
         }
-        if (temp->next==nullptr)
+        if (temp->next == nullptr)
         {
             return;
         }
         temp = temp->next;
         for (int i = 0; i < count; i++)
         {
-            if (temp->next==nullptr||temp->data=='\n')
+            if (temp->next == nullptr || temp->data == '\n')
             {
                 break;
             }
             temp = temp->next;
         }
-        if (temp->next!=nullptr)
+        if (temp->next != nullptr)
         {
             temp = temp->prev;
         }
@@ -153,7 +160,7 @@ public:
         {
             cout << temp->data;
             temp = temp->next;
-                
+
         }
         cout << endl << endl << endl << endl << endl << "\t\tCoursor Position :" << cursorposition << endl;
     }
@@ -161,13 +168,13 @@ public:
     void deleteWordBefore() {
         Node* temp = cursor;
         if (cursor->prev == nullptr || cursor->prev == head) {
-            return; 
+            return;
         }
 
-        while (temp!=head && temp->data!=' ')
+        while (temp != head && temp->data != ' ')
         {
             deleteBefore();
-            if (cursor->prev==nullptr)
+            if (cursor->prev == nullptr)
             {
                 break;
             }
@@ -181,7 +188,7 @@ public:
             return;
         }
 
-        while ( temp->data != ' ')
+        while (temp->data != ' ')
         {
             deleteAfter();
             if (cursor->next == nullptr)
@@ -194,7 +201,7 @@ public:
 
     void deleteBefore() {
 
-        if (cursor->prev!=nullptr && cursor->prev != head )
+        if (cursor->prev != nullptr && cursor->prev != head)
         {
             Node* del = cursor->prev;
             cursor->prev = del->prev;
@@ -207,14 +214,14 @@ public:
         {
             head = cursor;
             delete cursor->prev;
-            cursor->prev = nullptr; 
+            cursor->prev = nullptr;
             size--;
             cursorposition--;
         }
     }
 
     void deleteAfter() {
-        if (cursor->next!=nullptr)
+        if (cursor->next != nullptr)
         {
             Node* del = cursor->next;
             cursor->next = del->next;
@@ -231,18 +238,18 @@ public:
         if (file.is_open())
         {
             Node* temp = head;
-            while (temp!=nullptr) {
+            while (temp != nullptr) {
                 if (temp->data == '|');
                 else {
                     file << temp->data;
-                    
+
                 }
                 temp = temp->next;
             }
             file.close();
             cout << "File saved successfully!" << endl;
         }
-        else{
+        else {
             cout << "error in opening file\n";
         }
     }
@@ -287,7 +294,7 @@ int main() {
                 char select;
                 cout << "do u want to save ur file (y/n)";
                 cin >> select;
-                if (select=='y'||select=='Y')
+                if (select == 'y' || select == 'Y')
                 {
                     cout << "Enter filename to save: ";
                     cin >> filename;
@@ -297,13 +304,33 @@ int main() {
             }
             break;
         }
-        else if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) ) {  // Ctrl + Backspace
-            if (key==127)
+        if (key == 19) {  // Ctrl + S for saving
+            if (!namealrgiven)
+            {
+                cout << "Enter filename to save: ";
+                cin >> filename;
+                namealrgiven = 1;
+            }
+            n.savefile(filename);
+            continue;
+        }
+        if (key == 12) {  // Ctrl + L for loading
+            if (!namealrgiven)
+            {
+                cout << "Enter filename to load: ";
+                cin >> filename;
+                namealrgiven = 1;
+            }
+            n.loadfile(filename);
+            continue;
+        }
+        else if ((GetAsyncKeyState(VK_CONTROL) & 0x8000)) {
+            if (key == 127) // Ctrl + Backspace
             {
                 n.deleteWordBefore();
                 continue;
             }
-            if (key==-32)
+            if (key == -32) // Ctrl + Delete
             {
                 n.deleteWordAfter();
                 continue;
@@ -333,26 +360,6 @@ int main() {
                 n.deleteAfter();
                 continue;
             }
-        }
-        else if (key == 19) {  // Ctrl + S for saving
-            if (!namealrgiven)
-            {
-                cout << "Enter filename to save: ";
-                cin >> filename;
-                namealrgiven = 1;
-            }
-            n.savefile(filename);
-            continue;
-        }
-        else if (key == 12) {  // Ctrl + L for loading
-            if (!namealrgiven)
-            {
-                cout << "Enter filename to load: ";
-                cin >> filename;
-                namealrgiven=1;
-            }
-            n.loadfile(filename);
-            continue;
         }
         else if (key == 8) {  // Backspace key
             n.deleteBefore();
